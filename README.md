@@ -4,9 +4,9 @@
 
 由于 Unreal Engine 项目资源体积较大，`Content/` 不放在 GitHub 仓库中。
 
-百度网盘链接：你的链接
+百度网盘链接：https://pan.baidu.com/s/1oCUekFe5_kR1LsXTd4JVvQ
 
-提取码：xxxx
+提取码：6666
 
 使用方式：
 
