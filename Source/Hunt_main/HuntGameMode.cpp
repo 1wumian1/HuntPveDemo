@@ -19,6 +19,7 @@
 #include "Engine/TextRenderActor.h"
 #include "Engine/World.h"
 #include "EngineUtils.h"
+#include "GameFramework/PlayerStart.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInterface.h"
 #include "TimerManager.h"
@@ -28,6 +29,7 @@ AHuntGameMode::AHuntGameMode()
 	DefaultPawnClass = AHuntPlayerCharacter::StaticClass();
 	PlayerControllerClass = AHuntPlayerController::StaticClass();
 	HUDClass = AHuntHUD::StaticClass();
+	BossClass = AHuntBossEnemy::StaticClass();
 }
 
 void AHuntGameMode::StartPlay()
@@ -45,12 +47,7 @@ void AHuntGameMode::StartPlay()
 
 	if (AHuntPlayerCharacter* Player = Cast<AHuntPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
 	{
-		Player->SetActorLocation(FVector(0.0f, 0.0f, 160.0f), false, nullptr, ETeleportType::TeleportPhysics);
-		Player->SetActorRotation(FRotator::ZeroRotator);
-		if (AController* PlayerController = Player->GetController())
-		{
-			PlayerController->SetControlRotation(FRotator::ZeroRotator);
-		}
+		MovePlayerToStart(Player);
 		Player->SetInputEnabledByGame(false);
 	}
 }
@@ -68,12 +65,7 @@ void AHuntGameMode::StartRun()
 
 	if (AHuntPlayerCharacter* Player = Cast<AHuntPlayerCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0)))
 	{
-		Player->SetActorLocation(FVector(0.0f, 0.0f, 160.0f), false, nullptr, ETeleportType::TeleportPhysics);
-		Player->SetActorRotation(FRotator::ZeroRotator);
-		if (AController* PlayerController = Player->GetController())
-		{
-			PlayerController->SetControlRotation(FRotator::ZeroRotator);
-		}
+		MovePlayerToStart(Player);
 		Player->SetInputEnabledByGame(true);
 	}
 }
@@ -163,8 +155,19 @@ void AHuntGameMode::UnlockBoss()
 
 	if (!Boss)
 	{
-		const FVector BossLocation(1700.0f, 0.0f, 120.0f);
-		Boss = GetWorld()->SpawnActor<AHuntBossEnemy>(AHuntBossEnemy::StaticClass(), BossLocation, FRotator::ZeroRotator);
+		UClass* ClassToSpawn = BossClass ? BossClass.Get() : AHuntBossEnemy::StaticClass();
+		FVector SpawnLocation = BossSpawnLocation;
+		FRotator SpawnRotation = BossSpawnRotation;
+
+		TArray<AActor*> SpawnMarkers;
+		UGameplayStatics::GetAllActorsWithTag(this, BossSpawnTag, SpawnMarkers);
+		if (SpawnMarkers.Num() > 0 && SpawnMarkers[0])
+		{
+			SpawnLocation = SpawnMarkers[0]->GetActorLocation();
+			SpawnRotation = SpawnMarkers[0]->GetActorRotation();
+		}
+
+		Boss = GetWorld()->SpawnActor<AHuntBossEnemy>(ClassToSpawn, SpawnLocation, SpawnRotation);
 	}
 
 	SetPhase(EHuntGamePhase::FightBoss);
@@ -295,7 +298,7 @@ void AHuntGameMode::SpawnPrototypeWorld()
 
 	if (ATextRenderActor* GuideText = GetWorld()->SpawnActor<ATextRenderActor>(ATextRenderActor::StaticClass(), FVector(760.0f, 0.0f, 420.0f), FRotator(0.0f, 180.0f, 0.0f)))
 	{
-		GuideText->GetTextRender()->SetText(FText::FromString(TEXT("DEBUG MAP\nWASD Move  |  F Collect Clues  |  Hold E Dark Sight")));
+		GuideText->GetTextRender()->SetText(FText::FromString(TEXT("DEBUG MAP\nWASD Move  |  Ctrl Crouch  |  Shift Sprint  |  F Collect  |  Hold E Dark Sight")));
 		GuideText->GetTextRender()->SetTextRenderColor(FColor::White);
 		GuideText->GetTextRender()->SetHorizontalAlignment(EHTA_Center);
 		GuideText->GetTextRender()->SetWorldSize(70.0f);
@@ -347,5 +350,30 @@ void AHuntGameMode::CacheLevelActors()
 	{
 		ExtractionPoint = *It;
 		break;
+	}
+}
+
+void AHuntGameMode::MovePlayerToStart(AHuntPlayerCharacter* Player) const
+{
+	if (!Player)
+	{
+		return;
+	}
+
+	FVector StartLocation(0.0f, 0.0f, 160.0f);
+	FRotator StartRotation = FRotator::ZeroRotator;
+
+	for (TActorIterator<APlayerStart> It(GetWorld()); It; ++It)
+	{
+		StartLocation = It->GetActorLocation();
+		StartRotation = It->GetActorRotation();
+		break;
+	}
+
+	Player->SetActorLocation(StartLocation, false, nullptr, ETeleportType::TeleportPhysics);
+	Player->SetActorRotation(StartRotation);
+	if (AController* PlayerController = Player->GetController())
+	{
+		PlayerController->SetControlRotation(StartRotation);
 	}
 }

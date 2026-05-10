@@ -1,10 +1,27 @@
 #include "HuntSpawner.h"
 #include "HuntEnemyBase.h"
+#include "Components/ArrowComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Components/SceneComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
 AHuntSpawner::AHuntSpawner()
 {
 	PrimaryActorTick.bCanEverTick = false;
+
+	SceneRoot = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
+	RootComponent = SceneRoot;
+
+	SpawnPreviewCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("SpawnPreviewCapsule"));
+	SpawnPreviewCapsule->SetupAttachment(RootComponent);
+	SpawnPreviewCapsule->SetRelativeLocation(FVector(0.0f, 0.0f, 90.0f));
+	SpawnPreviewCapsule->SetCapsuleSize(35.0f, 90.0f);
+	SpawnPreviewCapsule->SetCollisionProfileName(FName("NoCollision"));
+	SpawnPreviewCapsule->SetHiddenInGame(true);
+
+	SpawnDirection = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnDirection"));
+	SpawnDirection->SetupAttachment(RootComponent);
+
 	EnemyClass = AHuntEnemyBase::StaticClass();
 }
 

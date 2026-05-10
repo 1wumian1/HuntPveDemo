@@ -5,6 +5,9 @@
 #include "HuntSpawner.generated.h"
 
 class AHuntEnemyBase;
+class UArrowComponent;
+class UCapsuleComponent;
+class USceneComponent;
 
 UCLASS(Blueprintable)
 class HUNT_MAIN_API AHuntSpawner : public AActor
@@ -24,6 +27,15 @@ public:
 
 protected:
 	void CleanupDeadReferences();
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hunt|Spawner")
+	TObjectPtr<USceneComponent> SceneRoot;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hunt|Spawner")
+	TObjectPtr<UCapsuleComponent> SpawnPreviewCapsule;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Hunt|Spawner")
+	TObjectPtr<UArrowComponent> SpawnDirection;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Spawner")
 	TSubclassOf<AHuntEnemyBase> EnemyClass;

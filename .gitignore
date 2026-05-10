@@ -22,3 +22,4 @@ Build/
 *.log
 
 # Keep source, config, content, and project files tracked.
+Content/

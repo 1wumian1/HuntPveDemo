@@ -6,7 +6,8 @@ void AHuntPlayerController::SetupInputComponent()
 {
 	Super::SetupInputComponent();
 
-	InputComponent->BindAction(TEXT("StartGame"), IE_Pressed, this, &AHuntPlayerController::StartGamePressed);
+	FInputActionBinding& StartGameBinding = InputComponent->BindAction(TEXT("StartGame"), IE_Pressed, this, &AHuntPlayerController::StartGamePressed);
+	StartGameBinding.bConsumeInput = false;
 }
 
 void AHuntPlayerController::PlayerTick(float DeltaTime)

@@ -4,6 +4,8 @@
 #include "Components/BoxComponent.h"
 #include "Components/PointLightComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundBase.h"
+#include "UObject/ConstructorHelpers.h"
 
 AHuntExtractionPoint::AHuntExtractionPoint()
 {
@@ -19,6 +21,13 @@ AHuntExtractionPoint::AHuntExtractionPoint()
 	BeaconLight->SetLightColor(FLinearColor(0.0f, 1.0f, 0.2f));
 	BeaconLight->SetIntensity(0.0f);
 	BeaconLight->SetAttenuationRadius(850.0f);
+
+	// A celebratory pickup-style cue when the player successfully extracts.
+	static ConstructorHelpers::FObjectFinder<USoundBase> ExtractCue(TEXT("/Game/GunSoundPack/BonusSounds/foley_soldier_gear_equipment_movement_grab_item_05_Cue.foley_soldier_gear_equipment_movement_grab_item_05_Cue"));
+	if (ExtractCue.Succeeded())
+	{
+		ExtractSound = ExtractCue.Object;
+	}
 }
 
 void AHuntExtractionPoint::BeginPlay()

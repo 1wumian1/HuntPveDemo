@@ -19,6 +19,6 @@ enum class EHuntGamePhase : uint8
 UENUM(BlueprintType)
 enum class EHuntWeaponKind : uint8
 {
-	Pistol UMETA(DisplayName = "Pistol"),
-	Rifle UMETA(DisplayName = "Rifle")
+	Shotgun UMETA(DisplayName = "Shotgun"),
+	Katana UMETA(DisplayName = "Katana")
 };

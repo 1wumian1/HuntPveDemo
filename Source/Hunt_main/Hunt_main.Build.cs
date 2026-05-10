@@ -15,8 +15,6 @@ public class Hunt_main : ModuleRules
 			"InputCore",
 			"EnhancedInput",
 			"AIModule",
-			"StateTreeModule",
-			"GameplayStateTreeModule",
 			"UMG",
 			"Slate"
 		});
@@ -24,13 +22,7 @@ public class Hunt_main : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { });
 
 		PublicIncludePaths.AddRange(new string[] {
-			"Hunt_main",
-			"Hunt_main/Variant_Horror",
-			"Hunt_main/Variant_Horror/UI",
-			"Hunt_main/Variant_Shooter",
-			"Hunt_main/Variant_Shooter/AI",
-			"Hunt_main/Variant_Shooter/UI",
-			"Hunt_main/Variant_Shooter/Weapons"
+			"Hunt_main"
 		});
 
 		// Uncomment if you are using Slate UI

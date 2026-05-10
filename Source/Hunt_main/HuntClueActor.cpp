@@ -1,6 +1,7 @@
 #include "HuntClueActor.h"
 #include "HuntGameMode.h"
 #include "Components/PointLightComponent.h"
+#include "Components/PrimitiveComponent.h"
 #include "Components/SphereComponent.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -40,8 +41,26 @@ void AHuntClueActor::Collect(AHuntPlayerCharacter* Player)
 
 void AHuntClueActor::SetDarkSightHighlighted(bool bHighlighted)
 {
-	if (!bCollected && GlowLight)
+	if (bCollected)
 	{
-		GlowLight->SetIntensity(bHighlighted ? 12000.0f : 5500.0f);
+		bHighlighted = false;
+	}
+
+	if (GlowLight)
+	{
+		GlowLight->SetLightColor(bHighlighted ? FLinearColor(0.0f, 0.35f, 1.0f) : FLinearColor(0.1f, 0.8f, 1.0f));
+		GlowLight->SetIntensity(bHighlighted ? 18000.0f : 5500.0f);
+		GlowLight->SetAttenuationRadius(bHighlighted ? 1100.0f : 450.0f);
+	}
+
+	TArray<UPrimitiveComponent*> PrimitiveComponents;
+	GetComponents<UPrimitiveComponent>(PrimitiveComponents);
+	for (UPrimitiveComponent* Primitive : PrimitiveComponents)
+	{
+		if (Primitive)
+		{
+			Primitive->SetRenderCustomDepth(bHighlighted);
+			Primitive->SetCustomDepthStencilValue(bHighlighted ? 3 : 0);
+		}
 	}
 }

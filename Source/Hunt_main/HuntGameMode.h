@@ -44,6 +44,9 @@ public:
 	bool CanExtract() const { return Phase == EHuntGamePhase::Extract; }
 	FText GetPhaseText() const;
 
+	// 当前 Boss 实例（线索收集完成后才会被生成）。HUD 需要用它来画暗视红色高亮。
+	AHuntBossEnemy* GetBoss() const { return Boss; }
+
 protected:
 	void SetPhase(EHuntGamePhase NewPhase);
 	void UnlockBoss();
@@ -54,18 +57,31 @@ protected:
 	void SpawnPrototypeWorld();
 	void SpawnTravelEnemies();
 	void CacheLevelActors();
+	void MovePlayerToStart(AHuntPlayerCharacter* Player) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Flow", meta = (ClampMin = 1))
 	int32 RequiredClues = 3;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Flow", meta = (ClampMin = 1.0))
-	float BanishDuration = 60.0f;
+	float BanishDuration = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Flow", meta = (ClampMin = 0.1))
 	float BanishSpawnInterval = 6.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Flow", meta = (ClampMin = 0))
 	int32 TravelEnemyCount = 8;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Boss")
+	TSubclassOf<AHuntBossEnemy> BossClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Boss")
+	FVector BossSpawnLocation = FVector(1700.0f, 0.0f, 120.0f);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Boss")
+	FRotator BossSpawnRotation = FRotator::ZeroRotator;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Boss")
+	FName BossSpawnTag = TEXT("BossSpawn");
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Hunt|Flow")
 	bool bCreatePrototypeActorsIfMissing = true;
